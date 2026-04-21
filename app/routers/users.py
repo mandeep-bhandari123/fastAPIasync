@@ -4,6 +4,8 @@ from fastapi import status , HTTPException , Depends , APIRouter
 from sqlalchemy import select
 from ..utils import hash_password , verify_password
 from ..database import get_db
+from  typing import Annotated
+from ..oauth2  import get_current_user
 
 router = APIRouter(
   prefix="/users",
@@ -27,6 +29,14 @@ async def create_user(user:schemas.User_Create , db:AsyncSession = Depends(get_d
   await db.commit()
   await db.refresh(new_user)
   return new_user
+
+@router.get('/{id}', response_model=schemas.User_Login)
+async def get_user_by_id(id:int ,db:AsyncSession = Depends(get_db) , current_user:int = Depends(get_current_user)):
+  result = await db.execute(
+    select(model.User).where(model.User.id == id)
+  )
+  user = result.scalar_one_or_none()
+  return user
 
 
     

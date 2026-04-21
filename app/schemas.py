@@ -23,3 +23,6 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
   id : int 
+
+class UserInDB(User):
+    hashed_password: str
